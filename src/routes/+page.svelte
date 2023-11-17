@@ -7,5 +7,5 @@
 </script>
 
 <main>
-    <Barcharttest2 />
+    <Search />
 </main>
