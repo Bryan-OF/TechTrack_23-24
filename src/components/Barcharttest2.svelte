@@ -2,6 +2,8 @@
     import { onMount } from 'svelte';
     import * as d3 from 'd3';
 
+    export let activeGame;
+
     async function fetchApiData(url) {
         const response = await fetch(url);
         return await response.json();
@@ -9,7 +11,7 @@
 
     onMount(async () => {
         // API URLs
-        const dealsUrl = "https://www.cheapshark.com/api/1.0/deals?title=deus%20ex%20human%20revolution%20directors%20cut";
+        const dealsUrl = `https://www.cheapshark.com/api/1.0/deals?title=${activeGame.internalName}&exact`;
         const storesUrl = "https://www.cheapshark.com/api/1.0/stores";
 
         // Fetch API data
