@@ -1,3 +1,4 @@
+<!-- Dit was mijn voor mijn historical data maar is niet gelukt. Source: https://d3-graph-gallery.com/graph/line_basic.html -->
 <script>
     import { onMount } from 'svelte';
     import * as d3 from 'd3';

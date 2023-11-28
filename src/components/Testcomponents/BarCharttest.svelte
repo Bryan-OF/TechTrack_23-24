@@ -1,3 +1,4 @@
+<!-- Originele barcharts is van https://codepen.io/bryan-of/pen/KKJWyYX deze was mijn eerste test chart -->
 <script>
     import { onMount } from 'svelte';
     import * as d3 from 'd3';

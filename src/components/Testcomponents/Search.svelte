@@ -1,3 +1,4 @@
+<!-- Eerst zou ik meerdere componenten oproepen, maar nu werk ik met 1 maincomponent. Source: https://www.w3schools.com/howto/howto_js_filter_lists.asp -->
 <script>
     const searchApi = "https://www.cheapshark.com/api/1.0/games?title="
     let searchInput;

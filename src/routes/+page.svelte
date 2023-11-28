@@ -1,9 +1,5 @@
 <script>
-	import Chart from '../components/BarCharttest1.svelte';
-	import Barcharttest2 from '../components/Barcharttest2.svelte';
-	import Linechart from '../components/Linecharttest1.svelte';
-	import MonumentsList from '../components/MonumentsList.svelte';
-	import Search from '../components/Search.svelte';
+	import Maincomponent from '../components/Maincomponent.svelte';
 
 	const searchApi = 'https://www.cheapshark.com/api/1.0/games?title=';
 	let searchInput;
@@ -17,43 +13,78 @@
 	}
 
 	function onClickGame(game) {
-        activeGame = null;
-		activeGame = game;
-		searchInput = '';
-		searchGame();
+		activeGame = null;
+		setTimeout(() => {
+			activeGame = game;
+			searchInput = '';
+			searchGame();
+		}, 10);
 	}
 </script>
 
 <main>
+	<h1>Game Checker</h1>
 	<input
 		type="text"
 		id="myInput"
 		bind:value={searchInput}
-		on:keydown={searchGame}
-		placeholder="Search for names.."
+		on:input={searchGame}
+		placeholder="Search for a Game"
 	/>
 
 	<ul>
 		{#each searchedGameResults as game}
-			<div on:click={onClickGame(game)}>
+			<button on:click={() => onClickGame(game)} class="game-item">
 				<li>{game.external}</li>
-				<img src={game.thumb} alt={game.external} />
-			</div>
+				<img class="game-thumb" src={game.thumb} alt={game.external} />
+			</button>
 		{/each}
 	</ul>
 	{#if activeGame}
 		<h3>{activeGame.external}</h3>
 		<img src={activeGame.thumb} alt={activeGame.external} />
-        <Barcharttest2 bind:activeGame />
+		<Maincomponent bind:activeGame />
 	{/if}
 </main>
 
 <style>
+	.game-thumb {
+		max-width: 80px;
+		max-height: 80px;
+	}
+
+	#myInput {
+		width: 700.8px;
+		padding: 19.2px;
+		border-radius: 30px;
+		border: 2.4px solid #000;
+		background: #fff;
+		display: inline-flex;
+		align-items: center;
+		gap: 9.6px;
+	}
+
+	main {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		height: 100vh;
+		gap: 20px;
+	}
+
+	h1 {
+		margin: 0;
+		font-size: 400%;
+	}
+
 	ul {
-		/* Remove default list styling */
 		list-style-type: none;
 		padding: 0;
 		margin: 0;
+		display: flex;
+		flex-direction: column;
+		align-items: flex-start;
 	}
 
 	ul li button {
@@ -69,5 +100,11 @@
 
 	ul li button:hover:not(.header) {
 		background-color: #eee; /* Add a hover effect to all links, except for headers */
+	}
+
+	.game-item {
+		display: flex; /* Voeg flex display toe */
+		align-items: center; /* Centreer de items verticaal */
+		gap: 10px; /* Voeg wat ruimte toe tussen de naam en de thumbnail */
 	}
 </style>
