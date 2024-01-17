@@ -10,6 +10,8 @@
     export let graphDataLess = []; // Data voor de optie "minder tonen"
     export let graphDataMore = []; // Data voor de optie "meer tonen"
 
+	let svg, x, y; // Globale variabelen voor SVG en schalen
+
 	// Functie om API data op te halen
 	async function fetchApiData(url) {
 		const response = await fetch(url);
@@ -18,60 +20,59 @@
 
 	// Functie om een staafdiagram te maken
     function makeBarChart() {
-        // Instellen van afmetingen en marges voor de grafiek
-		const margin = { top: 20, right: 30, bottom: 40, left: 90 },
-			width = 460 - margin.left - margin.right,
-			height = 400 - margin.top - margin.bottom;
+        // Updated schalen
+		x.domain([0, d3.max(graphData, (d) => d.price)]);
+		y.domain(graphData.map((d) => d.storeName));
 
-		// SVG object toevoegen
-		const svg = d3
-			.select('#bar-chart')
-			.append('svg')
-			.attr('width', width + margin.left + margin.right)
-			.attr('height', height + margin.top + margin.bottom)
-			.append('g')
-			.attr('transform', `translate(${margin.left}, ${margin.top})`);
+		// Updated Y-as
+		svg.select(".axis-y").remove();
+		svg.append('g')
+			.attr("class", "axis-y")
+			.call(d3.axisLeft(y));
 
-		// X-as (Horizontale as)
-		const x = d3
-			.scaleLinear()
-			.domain([0, 60])
-			.range([0, width]);
-		svg.append('g').attr('transform', `translate(0, ${height})`).call(d3.axisBottom(x));
+		// Updated balken
+		svg.selectAll('rect')
+			.data(graphData, (d) => d.storeName)
+			.join(
+				enter => enter.append('rect')
+							  .attr('x', x(0))
+							  .attr('y', (d) => y(d.storeName))
+							  .attr('width', 0)
+							  .attr('height', y.bandwidth())
+							  .attr('fill', '#69b3a2')
+							  .transition()
+							  .duration(500)
+							  .attr('width', (d) => x(d.price)),
+				update => update.transition()
+								.duration(500)
+								.attr('y', (d) => y(d.storeName))
+								.attr('width', (d) => x(d.price)),
+				exit => exit.transition()
+							.duration(500)
+							.attr('width', 0)
+							.remove()
+			);
 
-		// Y-as (Verticale as)
-		const y = d3
-			.scaleBand()
-			.range([0, height])
-			.domain(graphData.map((d) => d.storeName))
-			.padding(0.1);
-		svg.append('g').call(d3.axisLeft(y));
-
-		// Staafdiagram toevoegen
-		svg
-			.selectAll('rect')
-			.data(graphData)
-			.join('rect')
-			.attr('x', x(0))
-			.attr('y', (d) => y(d.storeName))
-			.attr('width', (d) => x(d.price))
-			.attr('height', y.bandwidth())
-			.attr('fill', '#69b3a2');
-
-		// Tekstlabels toevoegen
-		svg
-			.selectAll('.label')
-			.data(graphData)
-			.enter()
-			.append('text')
-			.attr('class', 'label')
-			.attr('x', (d) => x(d.price) + 5) // Ruimte vanaf de prijs
-			.attr('y', (d) => y(d.storeName) + y.bandwidth() / 2 + 5)
-			.text((d) => `€${d.price.toFixed(2)}`) // De prijs
-			.attr('text-anchor', 'start') // Positie van de tekst op de x-as
-			.style('fill', 'black') // Kleur van de tekst
-			.style('font-size', '12px'); // Grootte van de tekst
-    };
+		// Updated labels
+		svg.selectAll('.label')
+			.data(graphData, (d) => d.storeName)
+			.join(
+				enter => enter.append('text')
+							  .attr('class', 'label')
+							  .attr('x', (d) => x(d.price) + 5)
+							  .attr('y', (d) => y(d.storeName) + y.bandwidth() / 2 + 5)
+							  .text((d) => `€${d.price.toFixed(2)}`)
+							  .style('font-size', '12px')
+							  .attr('text-anchor', 'start')
+							  .style('fill', 'black'),
+				update => update.transition()
+								.duration(500)
+								.attr('x', (d) => x(d.price) + 5)
+								.attr('y', (d) => y(d.storeName) + y.bandwidth() / 2 + 5)
+								.text((d) => `€${d.price.toFixed(2)}`),
+				exit => exit.remove()
+			);
+	}
 
 	// Zorgt dat de functie wordt uitgevoerd wanneer het component geladen is
 	onMount(async () => {
@@ -116,6 +117,21 @@
         graphDataMore = graphData.slice(0, 20);
 		// Gebruikt de kortere lijst voor de grafiek.
         graphData = graphDataLess;
+
+		// SVG-object maken en schalen definiëren
+		const margin = { top: 20, right: 30, bottom: 40, left: 90 },
+        	width = 460 - margin.left - margin.right,
+        	height = 400 - margin.top - margin.bottom;
+
+    	svg = d3.select('#bar-chart')
+        	.append('svg')
+        	.attr('width', width + margin.left + margin.right)
+        	.attr('height', height + margin.top + margin.bottom)
+        	.append('g')
+        	.attr('transform', `translate(${margin.left}, ${margin.top})`);
+
+    	x = d3.scaleLinear().range([0, width]);
+    	y = d3.scaleBand().range([0, height]).padding(0.1);
 
 		// Maakt de grafiek met de geselecteerde winkels.
         makeBarChart();
@@ -168,31 +184,23 @@
 	});
 
     // Wisselt tussen meer of minder gegevens in de grafiek.
-    function onClickShowMore() {
-        // Soort ervoor dat de grafiek wisselt tussen de korte en lange versie van de grafiekdata.
-		if (showLess) {
-            showLess = false; // Schakelt naar de lange lijst.
-            graphData = graphDataMore; // Gebruikt de lange lijst voor de grafiek.
-        } else {
-            showLess = true; // Schakelt terug naar de korte lijst.
-            graphData = graphDataLess; // Gebruikt de korte lijst voor de grafiek.
-        }
-        // Verwijdert de oude grafiek en bouwt een nieuwe grafiek.
-        document.getElementById('bar-chart').innerHTML = '';
-        // Maakt de grafiek opnieuw met de nieuwe data.
-        makeBarChart();
-        // Toont de huidige status van de data in de console voor debuggen.
-        console.log(graphDataMore, graphDataLess, graphData);
-	}
+	function onClickShowMore() {
+		// Wissel tussen meer of minder gegevens
+		showLess = !showLess;
+		graphData = showLess ? graphDataLess : graphDataMore;
 
+		// Update de grafiek met de nieuwe data
+		makeBarChart();
+	}
 </script>
 
 <!-- HTML elementen voor de grafiek en de knop -->
-<div id="bar-chart" />
-<button on:click={() => onClickShowMore()}>Toon {showLess ? 'meer' : 'minder'}</button>
+<div id="bar-chart"></div>
+<button on:click={onClickShowMore}>Toon {showLess ? 'meer' : 'minder'}</button>
 
 <!-- Toon de Metascore grafiek als een game deze heeft -->
 {#if metaScore}
 	<h3>Metascore: {metaScore}</h3>
+	<div id="my_dataviz"></div>
 {/if}
 <div id="my_dataviz" />
