@@ -22,7 +22,7 @@
     function makeBarChart() {
         // Updated schalen
 		x.domain([0, d3.max(graphData, (d) => d.price)]);
-		y.domain(graphData.map((d) => d.storeName));
+    	y.domain(graphData.map((d) => d.storeName));
 
 		// Updated Y-as
 		svg.select(".axis-y").remove();
@@ -111,6 +111,9 @@
 			}, {})
 		);
 
+		// Sorteer de gegevens op prijs
+		graphData.sort((a, b) => a.price - b.price);		
+
 		// Kiest de eerste 5 winkels voor een kortere lijst.
 		graphDataLess = graphData.slice(0, 5);
 		// Kiest de eerste 20 winkels voor een langere lijst.
@@ -188,6 +191,9 @@
 		// Wissel tussen meer of minder gegevens
 		showLess = !showLess;
 		graphData = showLess ? graphDataLess : graphDataMore;
+
+		// Sorteer de gegevens op prijs
+		graphData.sort((a, b) => a.price - b.price);		
 
 		// Update de grafiek met de nieuwe data
 		makeBarChart();
