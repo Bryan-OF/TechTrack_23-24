@@ -49,9 +49,6 @@
 		</ul>
 	</div>
 	{#if activeGame}
-		<!-- Toont details van het actieve spel. -->
-		<h3>{activeGame.external}</h3>
-		<img src={activeGame.thumb} alt={activeGame.external} />
 		<Maincomponent bind:activeGame />
 	{/if}
 </main>
