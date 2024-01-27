@@ -292,12 +292,12 @@
 </div>
 
 <style>
-	.container {
-		display: flex;
-	}
+    .container {
+        display: flex;
+    }
 
-	.column {
-		flex: 1;
-		padding: 100px;
-	}
+    .column {
+        flex: 1;
+        padding: 20px;
+    }
 </style>

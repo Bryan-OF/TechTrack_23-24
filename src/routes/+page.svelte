@@ -9,8 +9,12 @@
     // Functie om games te zoeken op basis van de zoekinput.
 	async function searchGame() {
 		const response = await fetch(searchApi + searchInput); // Haalt gegevens op van de API dat samenkomt met zoekinput.
-		const games = await response.json(); // Zet de respons om naar JSON.
-		searchedGameResults = games.slice(0, 10); // Slaat de eerste 10 resultaten op.
+		let games = await response.json(); // Zet de respons om naar JSON.
+
+		// Filtert de games zodat alleen de games worden weergeven die beginnen met de begin zoekinput.
+		games = games.filter(game => game.external.toLowerCase().startsWith(searchInput.toLowerCase()));
+
+		searchedGameResults = games.slice(0, 10); // laat de eerste 10 resultaten zien.
 	}
 
     // Voort deze functies uit wanneer op een spel wordt geklikt.
@@ -26,7 +30,7 @@
 
 <main>
 	<div class="search-container">
-		<h1>Game Checker</h1>
+		<h1>Game<br>Checker</h1>
 		<!-- Zoekveld voor het invoeren van de game titel. -->
 		<input
 			type="text"
@@ -54,32 +58,55 @@
 </main>
 
 <style>
+	main {
+		width: 100%;
+	}
+
 	.game-thumb {
-		max-width: 80px;
-		max-height: 80px;
+    	max-width: 100px;
+    	max-height: 150px;
+    	min-width: 50px;
+    	min-height: 50px;
+
+    	border-radius: 4px; /* Licht afgeronde hoeken voor afbeeldingen */
+    	margin-right: 15px; /* Ruimte tussen afbeelding en tekst */
 	}
 
 	.search-container {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		justify-content: center;
+    	display: flex;
+    	flex-direction: row;
+    	align-items: center;
+    	justify-content: center;
+    	gap: 50px;
+    	width: 100%;
+    	margin-top: 20px;
 	}
 
 	#myInput {
-		width: 700.8px;
-		padding: 19.2px;
-		border-radius: 30px;
-		border: 2.4px solid #000;
-		background: #fff;
-		display: inline-flex;
-		align-items: center;
-		gap: 9.6px;
+    	width: 100%;
+    	padding: 12px 24px;
+    	border-radius: 24px;
+    	border: 1px solid #dfe1e5;
+    	background: #fff;
+    	display: inline-flex;
+    	align-items: center;
+    	gap: 9.6px;
+    	flex-grow: 1;
+    	box-shadow: 0 1px 6px rgba(32,33,36,0.28);
+    	font-size: 16px;
+    	color: #5F6368;
+    	outline: none;
+	}
+
+	#myInput:focus {
+    	box-shadow: 0 3px 8px rgba(32,33,36,0.28);
 	}
 
 	.results-container {
-		height: 400px;
-		overflow: auto;
+    	width: 100%;
+    	box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    	border-radius: 8px;
+    	overflow: hidden;
 	}
 
 	main {
@@ -87,42 +114,46 @@
 		flex-direction: column;
 		align-items: center;
 		justify-content: center;
-		height: 100vh;
 		gap: 20px;
 	}
 
 	h1 {
 		margin: 0;
-		font-size: 400%;
+		font-size: 180%;
 	}
 
 	ul {
-		list-style-type: none;
-		padding: 0;
-		margin: 0;
-		display: flex;
-		flex-direction: column;
-		align-items: flex-start;
+    	list-style-type: none;
+    	padding: 0;
+    	margin: 0;
 	}
 
-	ul li button {
-		border: 1px solid #ddd;
-		margin-top: -1px;
-		background-color: #f6f6f6;
-		padding: 12px;
-		text-decoration: none;
-		font-size: 18px;
-		color: black;
-		display: block;
-	}
+	button {
+        border: none;
+    }
 
 	ul li button:hover:not(.header) {
 		background-color: #eee;
 	}
 
-	.game-item {
-		display: flex;
-		align-items: center;
-		gap: 10px;
+    .game-item {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        width: 100%;
+        background-color: #fff;
+        padding: 12px 20px;
+        border-bottom: 1px solid #e0e0e0;
+        color: #202124;
+        font-size: 18px;
+    }
+
+	.game-item:hover {
+		background-color: #f8f9fa;
+		cursor: pointer;
 	}
 </style>
+
+
+
+
