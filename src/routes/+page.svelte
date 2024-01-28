@@ -52,6 +52,7 @@
 			{/each}
 		</ul>
 	</div>
+
 	{#if activeGame}
 		<Maincomponent bind:activeGame />
 	{/if}
@@ -60,6 +61,10 @@
 <style>
 	main {
 		width: 100%;
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		gap: 20px;
 	}
 
 	.game-thumb {
@@ -107,14 +112,6 @@
     	box-shadow: 0 2px 4px rgba(0,0,0,0.2);
     	border-radius: 8px;
     	overflow: hidden;
-	}
-
-	main {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		justify-content: center;
-		gap: 20px;
 	}
 
 	h1 {

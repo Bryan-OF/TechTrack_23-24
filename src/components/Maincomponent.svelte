@@ -23,35 +23,35 @@
 	function makeBarChart() {
 		// Updated schalen
 		x.domain([0, d3.max(graphData, (d) => d.price)]);
-		y.domain(graphData.map((d) => d.storeName));
+		y.domain(graphData.map((d) => d.storeName)).padding(0.4);
 
 		// Updated Y-as
 		svg.select('.axis-y').remove();
 		svg.append('g').attr('class', 'axis-y').call(d3.axisLeft(y));
 
 		// Updated balken
-		svg
-			.selectAll('rect')
+		svg.selectAll('rect')
 			.data(graphData, (d) => d.storeName)
 			.join(
-				(enter) =>
-					enter
-						.append('rect')
-						.attr('x', x(0))
-						.attr('y', (d) => y(d.storeName))
-						.attr('width', 0)
-						.attr('height', y.bandwidth())
-						.attr('fill', '#69b3a2')
-						.transition()
-						.duration(500)
-						.attr('width', (d) => x(d.price)),
-				(update) =>
-					update
-						.transition()
-						.duration(500)
-						.attr('y', (d) => y(d.storeName))
-						.attr('width', (d) => x(d.price)),
-				(exit) => exit.transition().duration(500).attr('width', 0).remove()
+				enter => enter
+							.append('rect')
+							.attr('x', x(0))
+							.attr('y', (d) => y(d.storeName))
+							.attr('width', 0)
+							.attr('height', y.bandwidth())
+							.attr('fill', '#00008b')
+							.transition()
+							.duration(500)
+							.attr('width', (d) => x(d.price)),
+				update => update
+							.transition()
+							.duration(500)
+							.attr('y', (d) => y(d.storeName))
+							.attr('width', (d) => x(d.price)),
+				exit => exit.transition()
+							.duration(500)
+							.attr('width', 0)
+							.remove()
 			);
 
 		// Updated labels
@@ -82,16 +82,15 @@
 
 	function makeMetaDonutChart() {
 		// Instellen van de afmetingen en marges van de grafiek
-		const widthDonot = 200,
-			heightDonot = 200,
+		const widthDonot = 400,
+			heightDonot = 400,
 			marginDonot = 40;
 
 		// De radius van de taartgrafiek is de helft van de breedte of hoogte (de kleinste van de twee). Ik trek er een beetje marge van af.
 		const radius = Math.min(widthDonot, heightDonot) / 2 - marginDonot;
 
-		// Voeg het SVG object toe aan de div met de naam 'my_dataviz'
 		const svgDonot = d3
-			.select('#my_dataviz')
+			.select('#metascore')
 			.append('svg')
 			.attr('width', widthDonot)
 			.attr('height', heightDonot)
@@ -103,7 +102,7 @@
 		metaScore = graphData[0].score;
 
 		// Instellen van de kleurenschaal
-		const color = d3.scaleOrdinal().range(['#98abc5', '#8a89a6', '#7b6888', '#6b486b', '#a05d56']);
+		const color = d3.scaleOrdinal().range(['#ffffff', '#FFA500']);
 
 		// Bereken de positie van elke groep in de taartgrafiek:
 		const pie = d3.pie().value((d) => d[1]);
@@ -131,16 +130,15 @@
 	function makeSteamDonutChart() {
 		console.log(graphData);
 		// Instellen van de afmetingen en marges van de grafiek
-		const widthDonot = 200,
-			heightDonot = 200,
-			marginDonot = 40;
+		const widthDonot = 400,
+			heightDonot = 400,
+			marginDonot = 40; // cirkel inside
 
 		// De radius van de taartgrafiek is de helft van de breedte of hoogte (de kleinste van de twee). Ik trek er een beetje marge van af.
 		const radius = Math.min(widthDonot, heightDonot) / 2 - marginDonot;
 
-		// Voeg het SVG object toe aan de div met de naam 'my_dataviz'
 		const svgDonot = d3
-			.select('#my_dataviz2')
+			.select('#steamscore')
 			.append('svg')
 			.attr('width', widthDonot)
 			.attr('height', heightDonot)
@@ -152,7 +150,7 @@
 		steamScore = graphData[0].scoreSteam;
 
 		// Instellen van de kleurenschaal
-		const color = d3.scaleOrdinal().range(['#98abc5', '#8a89a6', '#7b6888', '#6b486b', '#a05d56']);
+		const color = d3.scaleOrdinal().range(['#ffffff', '#00008b']);
 
 		// Bereken de positie van elke groep in de taartgrafiek:
 		const pie = d3.pie().value((d) => d[1]);
@@ -227,8 +225,8 @@
 
 		// SVG-object maken en schalen definiëren
 		const margin = { top: 50, right: 60, bottom: 10, left: 100 },
-			width = 560 - margin.left - margin.right,
-			height = 500 - margin.top - margin.bottom;
+			width = 700 - margin.left - margin.right,
+			height = 400 - margin.top - margin.bottom;
 
 		svg = d3
 			.select('#bar-chart')
@@ -239,7 +237,7 @@
 			.attr('transform', `translate(${margin.left}, ${margin.top})`);
 
 		x = d3.scaleLinear().range([0, width]);
-		y = d3.scaleBand().range([0, height]).padding(0.1);
+		y = d3.scaleBand().range([0, height]);
 
 		// Maakt de grafiek met de geselecteerde winkels.
 		makeBarChart();
@@ -265,39 +263,96 @@
 	}
 </script>
 
-<div class="container">
-	<div class="column">
-		<h3>{activeGame.external}</h3>
+<section>
+	<div class="information">  <!-- underpart -->
 		<img src={activeGame.thumb} alt={activeGame.external} />
-		<hr style="margin: 50px 0 50px 0;" />
-		<div id="bar-chart" />
-		<button on:click={onClickShowMore}>Toon {showLess ? 'meer' : 'minder'}</button>
+		<h2>{activeGame.external}</h2>	
 	</div>
-	<div class="column">
-		<div class="container">
-			<div class="column">
+
+	<div class="charts">  <!-- upperpart -->
+		<div class="Prijs_chart"> <!-- bar chart -->
+			<h3>Game Prijzen</h3>
+			<div id="bar-chart" />
+			<button on:click={onClickShowMore}>Toon {showLess ? 'meer' : 'minder'}</button>
+		</div>
+
+		<div class="donut_charts">
+			<div class="donut"> <!-- Metascore chart -->
 				{#if metaScore}
 					<h3>Metascore: {metaScore}</h3>
 				{/if}
-				<div id="my_dataviz" />
+				<div id="metascore" />
 			</div>
-			<div class="column">
+	
+			<div class="donut"> <!-- Steamscore chart -->
 				{#if steamScore}
 					<h3>Steamscore: {steamScore}</h3>
 				{/if}
-				<div id="my_dataviz2" />
+				<div id="steamscore" />
 			</div>
 		</div>
 	</div>
-</div>
+</section>
 
 <style>
-    .container {
-        display: flex;
+	.information {
+		display: flex;
+		flex-direction: row;
+		gap: 20px;
     }
 
-    .column {
-        flex: 1;
-        padding: 20px;
+	img {
+		min-height: 200px;
+		max-height: 280px;
+		max-width: 400px;
+	}
+
+    .charts {
+		padding-top: 20px;
+		display: flex;
+		flex-direction: row;
+		justify-content: space-between;
     }
+
+	.Prijs_chart {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+	}
+
+	button {
+		background-color: darkblue;
+		color: white;
+		border: none;
+		padding: 4px 16px;
+		border-radius: 20px;
+		width: 150px;
+		height: 40px;
+		font-size: 20px;
+	}
+
+	h3 {
+		margin: 0;
+		font-size: 30px;
+		font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+	}
+
+	h2 {
+		margin: 0;
+		font-size: 40px;
+		font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+	}
+
+	.donut_charts {
+		display: flex;
+		flex-direction: row;
+
+		/* background-color: aqua; */
+    }
+
+	.donut {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+	}
 </style>
