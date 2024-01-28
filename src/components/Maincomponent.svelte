@@ -3,9 +3,9 @@
 	import * as d3 from 'd3';
 
 	// Geëxporteerde variabelen voor gebruik buiten het component
-	export let activeGame;
-	export let metaScore = null;
-	export let steamScore = null;
+	export let activeGame; // Huidig geselecteerde game
+	export let metaScore = null; // Metascore-waarde
+	export let steamScore = null; // Steamscore-waarde
 	export let graphData = []; // Data voor de grafiek
 	export let showLess = true; // Status om meer of minder data te tonen
 	export let graphDataLess = []; // Data voor de optie "minder tonen"
@@ -19,6 +19,9 @@
 		return await response.json();
 	}
 
+	// Deze barchart is gebaseert op de D3 barchart van D3.js Graph Gallery: Horizontal bar chart in d3.js.
+	// Link: https://d3-graph-gallery.com/graph/barplot_horizontal.html
+
 	// Functie om een staafdiagram te maken
 	function makeBarChart() {
 		// Updated schalen
@@ -30,28 +33,28 @@
 		svg.append('g').attr('class', 'axis-y').call(d3.axisLeft(y));
 
 		// Updated balken
-		svg.selectAll('rect')
+		svg
+			.selectAll('rect')
 			.data(graphData, (d) => d.storeName)
 			.join(
-				enter => enter
-							.append('rect')
-							.attr('x', x(0))
-							.attr('y', (d) => y(d.storeName))
-							.attr('width', 0)
-							.attr('height', y.bandwidth())
-							.attr('fill', '#00008b')
-							.transition()
-							.duration(500)
-							.attr('width', (d) => x(d.price)),
-				update => update
-							.transition()
-							.duration(500)
-							.attr('y', (d) => y(d.storeName))
-							.attr('width', (d) => x(d.price)),
-				exit => exit.transition()
-							.duration(500)
-							.attr('width', 0)
-							.remove()
+				(enter) =>
+					enter
+						.append('rect')
+						.attr('x', x(0))
+						.attr('y', (d) => y(d.storeName))
+						.attr('width', 0)
+						.attr('height', y.bandwidth())
+						.attr('fill', '#00008b')
+						.transition()
+						.duration(500)
+						.attr('width', (d) => x(d.price)),
+				(update) =>
+					update
+						.transition()
+						.duration(500)
+						.attr('y', (d) => y(d.storeName))
+						.attr('width', (d) => x(d.price)),
+				(exit) => exit.transition().duration(500).attr('width', 0).remove()
 			);
 
 		// Updated labels
@@ -79,6 +82,9 @@
 				(exit) => exit.remove()
 			);
 	}
+
+	// Deze Donut charts zijn gebaseert op de D3 Donut chart van D3.js Graph Gallery: Donut Chart
+	// Link: https://d3-graph-gallery.com/donut.html
 
 	function makeMetaDonutChart() {
 		// Instellen van de afmetingen en marges van de grafiek
@@ -264,27 +270,32 @@
 </script>
 
 <section>
-	<div class="information">  <!-- underpart -->
+	<div class="information">
+		<!-- upperpart -->
 		<img src={activeGame.thumb} alt={activeGame.external} />
-		<h2>{activeGame.external}</h2>	
+		<h2>{activeGame.external}</h2>
 	</div>
 
-	<div class="charts">  <!-- upperpart -->
-		<div class="Prijs_chart"> <!-- bar chart -->
+	<div class="charts">
+		<!-- underpart -->
+		<div class="Prijs_chart">
+			<!-- bar chart -->
 			<h3>Game Prijzen</h3>
 			<div id="bar-chart" />
 			<button on:click={onClickShowMore}>Toon {showLess ? 'meer' : 'minder'}</button>
 		</div>
 
 		<div class="donut_charts">
-			<div class="donut"> <!-- Metascore chart -->
+			<div class="donut">
+				<!-- Metascore chart -->
 				{#if metaScore}
 					<h3>Metascore: {metaScore}</h3>
 				{/if}
 				<div id="metascore" />
 			</div>
-	
-			<div class="donut"> <!-- Steamscore chart -->
+
+			<div class="donut">
+				<!-- Steamscore chart -->
 				{#if steamScore}
 					<h3>Steamscore: {steamScore}</h3>
 				{/if}
@@ -299,7 +310,7 @@
 		display: flex;
 		flex-direction: row;
 		gap: 20px;
-    }
+	}
 
 	img {
 		min-height: 200px;
@@ -307,12 +318,12 @@
 		max-width: 400px;
 	}
 
-    .charts {
+	.charts {
 		padding-top: 20px;
 		display: flex;
 		flex-direction: row;
 		justify-content: space-between;
-    }
+	}
 
 	.Prijs_chart {
 		display: flex;
@@ -346,9 +357,7 @@
 	.donut_charts {
 		display: flex;
 		flex-direction: row;
-
-		/* background-color: aqua; */
-    }
+	}
 
 	.donut {
 		display: flex;
