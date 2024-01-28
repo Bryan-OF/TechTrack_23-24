@@ -1,6 +1,6 @@
 # Projectnaam: Game Checker
 
-(Image)
+![Game checker deel 3](https://github.com/Bryan-OF/TechTrack_23-24/assets/112858653/5ff5e7ec-52b5-4905-9965-1ce99d5c894a)
 
 ## Beschrijving
 Game Checker is de website om de voordeligste webwinkel te vinden voor je favoriete Steam-games.
