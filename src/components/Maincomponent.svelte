@@ -52,6 +52,7 @@
 					update
 						.transition()
 						.duration(500)
+						.attr('height', y.bandwidth())
 						.attr('y', (d) => y(d.storeName))
 						.attr('width', (d) => x(d.price)),
 				(exit) => exit.transition().duration(500).attr('width', 0).remove()
